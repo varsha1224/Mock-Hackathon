@@ -1,8 +1,5 @@
 # To find the closest path from the restaurant to all 20 neighborhoods
 import json
-import numpy as np
-from sys import maxsize 
-from itertools import permutations
 
 # Read the json file
 f = open('C:/Mock Hackathon/Input data/level0.json')
@@ -52,7 +49,6 @@ for i in range(len(visited)):
 	else:
 		path.append("n" + str(visited[i] - 1))
 path.append("r0")
-print(path)
 
 path_dict = {}
 path_dict["path"] = path
