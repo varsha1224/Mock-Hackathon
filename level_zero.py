@@ -1,5 +1,6 @@
 # To find the closest path from the restaurant to all 20 neighborhoods
 import json
+import numpy as np
 from sys import maxsize 
 from itertools import permutations
 
@@ -13,46 +14,53 @@ n0 = data['neighbourhoods']['n0']['distances']
 	
 r0 = data['restaurants']['r0']['neighbourhood_distance']
 
-
-# Find the shortest path from the restaurant at Saibaba colony, cover all 20 neighbourhoods and return back 
-# function to implement traveling salesman 
-V = 20
-
-# implementation of traveling Salesman Problem 
-def travellingSalesmanProblem(graph, s): 
-
-	# store all vertex apart from source vertex 
-	vertex = [] 
-	for i in range(V): 
-		if i != s: 
-			vertex.append(i) 
-
-	min_path = maxsize 
-	next_permutation = permutations(vertex)
-	for i in next_permutation:
-        
-		# store current Path weight(cost) 
-		current_pathweight = 0
-
-		# compute current path weight 
-		k = s 
-		for j in i: 
-			current_pathweight += graph[k][j] 
-			k = j 
-		current_pathweight += graph[k][s] 
-
-		# update minimum 
-		min_path = min(min_path, current_pathweight) 
-		
-	return min_path 
+def findNextNode(arr, visited):
+	n = len(arr)
+	minVal = float('inf')
+	for i in range(n):
+		if arr[i] != 0 and arr[i] < minVal:
+			if i not in visited:
+				minVal = arr[i]
+				nodeToVisit = i
+	return nodeToVisit
 
 graph = []
-graph.append(r0)	
+graph.append([0] + r0)	
 j = 0
-for i in range(19):
+for i in range(20):
 	start = [r0[j]]
 	graph.append(start + data['neighbourhoods']['n' + str(i)]['distances'])
 	j += 1
-print(graph)
-source = 0
-print(travellingSalesmanProblem(graph, source))
+
+for i in range (len(graph)):
+	print(graph[i])
+
+visited = [0]
+nodeToVisit = findNextNode(graph[0], visited)
+visited.append(nodeToVisit)
+
+print(len(graph[0]))
+while len(visited) < 21:
+	nodeToVisit = findNextNode(graph[nodeToVisit], visited) 
+	visited.append(nodeToVisit)
+
+#print(visited)
+path = []
+for i in range(len(visited)):
+	if visited[i] == 0:
+		path.append("r" + str(visited[i]))
+	else:
+		path.append("n" + str(visited[i] - 1))
+path.append("r0")
+print(path)
+
+path_dict = {}
+path_dict["path"] = path
+
+json_object = {}
+json_object["v0"] = path_dict
+
+print(json_object)
+
+with open("level0_output.json", "w") as outfile:
+    json.dump(json_object, outfile)
